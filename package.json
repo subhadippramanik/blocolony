@@ -1,0 +1,25 @@
+{
+  "name": "device-chain",
+  "version": "0.0.1",
+  "description": "Device as block chain",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/subhadippramanik/device-chain.git"
+  },
+  "author": "pramaniksubhadip@gmail.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/subhadippramanik/device-chain/issues"
+  },
+  "homepage": "https://github.com/subhadippramanik/device-chain#readme",
+  "dependencies": {
+    "crypto-js": "^3.1.9-1",
+    "express": "^4.16.3",
+    "node-promise": "^0.5.13",
+    "uuid": "^3.2.1"
+  }
+}

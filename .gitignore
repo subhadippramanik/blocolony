@@ -1,0 +1,7 @@
+node_modules
+coverage
+.vscode
+log/
+package-lock.json
+.nyc_output/
+gunit.xml
