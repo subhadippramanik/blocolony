@@ -2,7 +2,6 @@ package com.blocolony.service;
 
 import java.time.Instant;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -10,12 +9,12 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.blocolony.model.Block;
@@ -24,7 +23,8 @@ import com.blocolony.model.Chain;
 @Service
 public class ChainService {
 
-	private final int difficultyFactor = 5;
+	@Value("${difficulty.factor}")
+	private int difficultyFactor;
 	
 	private String difficultySalt;
 	
@@ -61,9 +61,7 @@ public class ChainService {
 		executor.submit(()->{
 			Block minedBlock =  mineBlock(block);
 			chain.push(minedBlock);
-			Logger.getLogger(getClass()).info(queuedDevices);
 			queuedDevices.remove(block.getDevice().getId());
-			Logger.getLogger(getClass()).info(queuedDevices);
 		});		
 	}
 	
