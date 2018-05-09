@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/subhadippramanik/device-chain#readme",
   "dependencies": {
+    "cluster": "^0.7.7",
     "crypto-js": "^3.1.9-1",
     "express": "^4.16.3",
     "node-promise": "^0.5.13",
