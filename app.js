@@ -2,13 +2,18 @@ var Device = require('./device');
 var Block = require('./block');
 var BlockChain = require('./chain');
 var uuidv1 = require('uuid/v1');
-var express = require('express');
 var cluster = require('cluster');
 
 const deviceChain = new BlockChain();
 if (cluster.isMaster) {
-    cluster.fork();
+    var cpuCores = require('os').cpus();
+    console.log("Number of CPU cores: " + cpuCores.length);
+    cpuCores.forEach(cpuCore => {
+        let worker = cluster.fork();
+        console.log("Worker created with id: " + worker.id);
+    });
 } else {
+    var express = require('express');
     var app = express();
     app.use(express.json());
 
