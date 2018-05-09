@@ -1,10 +1,7 @@
 package com.blocolony.service;
 
 import java.time.Instant;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,18 +14,11 @@ public class DeviceService {
 
 	@Autowired
 	private ChainService chainService;
-	
-	private ExecutorService executor = Executors.newFixedThreadPool(4);
 
-	public void createAndRegisterDevice(Device device) {
-		final Block block = new Block(Instant.now(), createDevice(device.getId()));
-		
-		executor.submit(new Callable<Void>() {
-			public Void call() throws Exception {
-				chainService.addBlock(block);
-				return null;
-			}
-		});
+	public void createAndRegisterDevice(Device device) throws InterruptedException, ExecutionException {
+		Device createdDevice = createDevice(device.getId());
+		final Block block = new Block(Instant.now(), createdDevice);
+		chainService.addBlock(block);
 	}
 
 	private Device createDevice(String id) {

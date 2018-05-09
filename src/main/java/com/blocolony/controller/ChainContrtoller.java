@@ -1,7 +1,9 @@
 package com.blocolony.controller;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +26,9 @@ public class ChainContrtoller {
 	DeviceService deviceService;
 
 	@RequestMapping(value = "/device", method = RequestMethod.POST)
-	public HttpStatus createDeviec(@RequestBody Device device) {
-		if (chainService.hasDeviceWithSameId(device.getId())) {
+	public HttpStatus createDeviec(@RequestBody Device device) throws InterruptedException, ExecutionException {
+		Logger.getLogger(getClass()).info("Request for device creation..");
+		if (chainService.hasAnyDeviceWithSameId(device.getId())) {
 			return HttpStatus.CONFLICT;
 		} else {
 			deviceService.createAndRegisterDevice(device);

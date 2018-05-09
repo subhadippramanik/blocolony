@@ -2,11 +2,19 @@ package com.blocolony.service;
 
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +27,10 @@ public class ChainService {
 	private final int difficultyFactor = 5;
 	
 	private String difficultySalt;
+	
+	private Set<String> queuedDevices = new HashSet<>();
+	
+	private ExecutorService executor = Executors.newFixedThreadPool(4);
 
 	@Autowired
 	private Chain chain;
@@ -36,17 +48,23 @@ public class ChainService {
 		return chain.getBlocks();
 	}
 	
-	public Boolean hasDeviceWithSameId(String id) {
+	public Boolean hasAnyDeviceWithSameId(String id) {
 		return getBlocks().stream()
 				.filter(block -> Objects.nonNull(block.getDevice()) && block.getDevice().getId().equals(id)).findFirst()
-				.isPresent();
+				.isPresent() || queuedDevices.contains(id);
 	}
 
-	public void addBlock(Block block) {
+	public void addBlock(Block block) throws InterruptedException, ExecutionException {
+		queuedDevices.add(block.getDevice().getId());
 		List<Block> blocks = getBlocks();
 		block.setPreviousHash(blocks.get(blocks.size() - 1).getHashCode());
-		Block minedBlock = mineBlock(block);
-		chain.push(minedBlock);
+		executor.submit(()->{
+			Block minedBlock =  mineBlock(block);
+			chain.push(minedBlock);
+			Logger.getLogger(getClass()).info(queuedDevices);
+			queuedDevices.remove(block.getDevice().getId());
+			Logger.getLogger(getClass()).info(queuedDevices);
+		});		
 	}
 	
 	private void createGenesisBlock() {
@@ -59,7 +77,7 @@ public class ChainService {
 			block.increaseNonce();
 			block.calculateHash();
 		}
-		System.out.println("BLOCK MINED: " + block.getHashCode());
+		Logger.getLogger(getClass()).info("Block mined: " + block.getHashCode());
 		return block;
 	}
 
