@@ -22,14 +22,18 @@ public class ChainContrtoller {
 	ChainService chainService;
 	@Autowired
 	DeviceService deviceService;
-	
-	@RequestMapping(value="/device", method=RequestMethod.POST)
+
+	@RequestMapping(value = "/device", method = RequestMethod.POST)
 	public HttpStatus createDeviec(@RequestBody Device device) {
-		deviceService.createAndRegisterDevice(device);
-		return HttpStatus.ACCEPTED;
+		if (chainService.hasDeviceWithSameId(device.getId())) {
+			return HttpStatus.CONFLICT;
+		} else {
+			deviceService.createAndRegisterDevice(device);
+			return HttpStatus.ACCEPTED;
+		}
 	}
-	
-	@RequestMapping(value="/chain", method=RequestMethod.GET)
+
+	@RequestMapping(value = "/chain", method = RequestMethod.GET)
 	public ResponseEntity<List<Block>> getChain() {
 		return new ResponseEntity<List<Block>>(chainService.getBlocks(), HttpStatus.OK);
 	}
