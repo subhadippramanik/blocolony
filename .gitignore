@@ -5,3 +5,7 @@ log/
 package-lock.json
 .nyc_output/
 gunit.xml
+target/
+.classpath
+.project
+.settings/
