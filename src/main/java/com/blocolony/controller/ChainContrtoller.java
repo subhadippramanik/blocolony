@@ -26,13 +26,13 @@ public class ChainContrtoller {
 	DeviceService deviceService;
 
 	@RequestMapping(value = "/device", method = RequestMethod.POST)
-	public HttpStatus createDeviec(@RequestBody Device device) throws InterruptedException, ExecutionException {
+	public ResponseEntity<Void> createDeviec(@RequestBody Device device) throws InterruptedException, ExecutionException {
 		Logger.getLogger(getClass()).info("Request for device creation..");
 		if (chainService.hasAnyDeviceWithSameId(device.getId())) {
-			return HttpStatus.CONFLICT;
+			return new ResponseEntity<>(HttpStatus.CONFLICT);
 		} else {
 			deviceService.createAndRegisterDevice(device);
-			return HttpStatus.ACCEPTED;
+			return new ResponseEntity<>(HttpStatus.ACCEPTED);
 		}
 	}
 
