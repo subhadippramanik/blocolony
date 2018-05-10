@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 
 import com.blocolony.model.Block;
 import com.blocolony.model.Chain;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class ChainService {
@@ -37,6 +39,9 @@ public class ChainService {
 
 	@Autowired
 	private BlockService blockService;
+	
+	@Autowired
+	private MessageService messageService;
 
 	@PostConstruct
 	public void initializeChain() {
@@ -61,6 +66,12 @@ public class ChainService {
 		executor.submit(()->{
 			Block minedBlock =  mineBlock(block);
 			chain.push(minedBlock);
+			try {
+				messageService.publish(new ObjectMapper().writeValueAsString(block));
+			} catch (JsonProcessingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			queuedDevices.remove(block.getDevice().getId());
 		});		
 	}
